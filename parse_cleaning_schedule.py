@@ -14,33 +14,36 @@ class AutoVivification(dict):
             return value
 
 
-def input_sweeping_sched_from_csv(in_f,data_container):
-    # this inputs the street cleaning data in in_f into data_container        
-	##
-	# reading the street cleaning schedule, downloaded from the sf database 
-	##
-	# description of the columns
-	# line[0] : week_3
+def input_sweeping_sched_from_csv(in_f,data_container,weekdays):
+    """
+    we will dump the data in the variable data_container. The keys are going to be cnn variable
+        which uniqly identifies the considered street section
+            subkeys are street_address, latitude and longitude and days of the week. 
+                for each day the subkeys are R/L side. 
+                    for each R/L side, subkeys are start_hrs and end_hrs, and which 
+                        weeks in the month that schedule applies. 
+    """
+	# description of the columns of the csv file
+	# line[0] : week_3 schedule
 	# line[1] : weekday, 
-	# line[2] : week_2
-	# line[3] : end of R side
+	# line[2] : week_2 schedule
+	# line[3] : end of R (even) side
 	# line[4] : cnn variable, unique section identifier
 	# line[5] : street name
-	# line[7] : start of L side
+	# line[7] : start of L (odd) side
 	# line[10] : end of L side
-	# line[11] : week_1
+	# line[11] : week_1 schedule
 	# line[12] : start of R side
 	# line[13] : R or L flag
-	# line[14] : from hour
+	# line[14] : starting hour
 	# line[17] : block sweep 
-	# line[18] : to hour
-	# line[19] : week_5
-	# line[21] : week_4
-	# line[22] : lat
-	# line[23] : lon
+	# line[18] : ending hour
+	# line[19] : week_5 schedule
+	# line[21] : week_4 schedule
+	# line[22] : latitude
+	# line[23] : longitude 
 
     verbose=0
-    weekdays=['Mon','Tues','Wed','Thu','Fri','Sat','Sun','Holiday']
     
     File=open(in_f, mode='r'); line = File.readline(); line = File.readline();    
     while line:	
@@ -48,11 +51,11 @@ def input_sweeping_sched_from_csv(in_f,data_container):
         line=line.rstrip(); line=line.split(',')    
         if len(line) != 24 : print "wrong length ", line; break;
             
-        startn_R = line[12] # start street address number for the R side 
+        startn_R = line[12] # starting street address number for the R side 
         endn_R = line[3]; startn_L = line[7]; endn_L = line[10]
         
         if startn_R == '0' and endn_R == '0' and startn_L == '0' and endn_L == '0':
-            #print "skipping the line ", line; 
+            if verbose == 1 : print "skipping the line ", line; 
             line = File.readline();  continue
         
         if line[4] not in data_container:
@@ -68,8 +71,7 @@ def input_sweeping_sched_from_csv(in_f,data_container):
             # check which weeks in the month that day is schedules, e.g. YYYYY means all weeks
             week_flags=line[11]+line[2]+line[0]+line[21]+line[19]
             
-            # hierarchy of indicies in data_container identifier - day (line[1]) - R/L (line[13]) : data_container[cnn_id][day][R/L]['end_hrs'] 
-            
+            # hierarchy of indicies in data_container identifier: 1) day (line[1]) 2) R/L (line[13]) 3) data_container[cnn_id][day][R/L]['end_hrs'] 
             data_container[line[4]][line[1]][line[13]]['week_flags'] = week_flags           
             data_container[line[4]][line[1]][line[13]]['start_hrs'] = line[14]                      
             data_container[line[4]][line[1]][line[13]]['end_hrs'] = line[18]     
@@ -92,7 +94,6 @@ def input_sweeping_sched_from_csv(in_f,data_container):
                         data_container[line[4]][line[1]][line[13]]['start_hrs'] , line[14] , " ", \
                          data_container[line[4]][line[1]][line[13]]['end_hrs'] , line[18]
                     
-                    #print data_container[line[4]][line[1]][line[13]]
                 else:                    
                     if data_container[line[4]][line[1]][line[13]]['week_flags'] != week_flags:
                         newflag=''
@@ -101,9 +102,9 @@ def input_sweeping_sched_from_csv(in_f,data_container):
                                 newflag+='Y'
                             else:
                                 newflag='N'                                
-                        #print "corrected duplicate", data_container[line[4]][line[1]][line[13]]['week_flags'] , week_flags,                        
+                        if verbose == 1 : print "corrected duplicate", data_container[line[4]][line[1]][line[13]]['week_flags'] , week_flags,                        
                         data_container[line[4]][line[1]][line[13]]['week_flags'] = newflag                    
-                        #print data_container[line[4]][line[1]][line[13]]['week_flags']
+                        if verbose == 1 : print data_container[line[4]][line[1]][line[13]]['week_flags']
 
             if line[1] not in weekdays: 
                 print 
@@ -114,7 +115,6 @@ def input_sweeping_sched_from_csv(in_f,data_container):
             week_flags=line[11]+line[2]+line[0]+line[21]+line[19]
             
             # hierarchy of indicies in data_container identifier - day (line[1]) - R/L (line[13])
-            
             data_container[line[4]][line[1]][line[13]]['week_flags'] = week_flags           
             data_container[line[4]][line[1]][line[13]]['start_hrs'] = line[14]                      
             data_container[line[4]][line[1]][line[13]]['end_hrs'] = line[18]   
@@ -125,14 +125,13 @@ def input_sweeping_sched_from_csv(in_f,data_container):
         line = File.readline();  
     File.close()
     return data_container    
-	
-	
 
-def input_tow_sched_from_csv(in_f,data_container):
-    ##
-    # reading the tow away schedule, downloaded from the sf database 
-    ##
-    # this inputs the data in in_f into data_container
+
+def input_tow_sched_from_csv(in_f,data_container,weekdays):
+    """
+        reading the tow away schedule, downloaded from the sf database 
+        this inputs the data in in_f into data_container
+    """
     verbose=0
     weekdays=['Mon','Tues','Wed','Thu','Fri','Sat','Sun','Holiday']
     
@@ -150,13 +149,11 @@ def input_tow_sched_from_csv(in_f,data_container):
         line=line.replace("Fr,Sa", "Fri-Sat") # specific to this particular file                
         line=line.replace("Sa,Su", "Sat-Sun") # specific to this particular file                
         
-        original=line
-        
+        original=line        
         line=line.rstrip(); line=line.split(',')    
         if len(line) != 25 : print "wrong length ", original; break;
             
         cnn_id = line[9]     
-        
         if cnn_id in data_container:
             if line[12] == 'Left':
                 side='L'
@@ -165,13 +162,12 @@ def input_tow_sched_from_csv(in_f,data_container):
             else:
                 print "problematic side", line[12] ; break
             
-            if side in data_container[cnn_id]:
-                
+            if side in data_container[cnn_id]:                
                 print "why side already in the towaway?"; break 
             else:
-                                                    # days , start time, end time
+                # order of variables in the below array: day , start time, end time                                                    
                 if len(line[1]) < 2: line[1] =  '000'  
-                data_container[cnn_id]['tow'][side]=[[line[3],line[1][:-2],line[2][:-2]]]                
+                data_container[cnn_id]['tow'][side]=[[line[3],line[1][:-2],line[2][:-2]]] 
                 
                 if len(line[4]) > 2:
                     data_container[cnn_id]['tow'][side].append([line[6],line[4][:-2],line[5][:-2]])
@@ -181,10 +177,10 @@ def input_tow_sched_from_csv(in_f,data_container):
     return data_container    
 
 	
-##
-# Connect to DB, return connection object
-##
 def db_connect(db_name=None):
+    """
+        Connect to DB, return connection object
+    """
     try:
         cnx = mysql.connector.connect(user='adel')#(user='*********', password='*********')
     except mysql.connector.Error as err:
@@ -203,10 +199,11 @@ def db_connect(db_name=None):
                 print(err)
                 exit(1)
         return cnx
-##
-# Create database
-##
+
 def create_database(cursor, db_name):
+    """
+        Create sql database
+    """
     cursor = cnx.cursor()
     try:
         cnx.database = db_name    
@@ -216,7 +213,7 @@ def create_database(cursor, db_name):
                 cursor.execute(
                     "CREATE DATABASE {} DEFAULT CHARACTER SET 'utf8'".format(db_name))
                 #cursor.execute(
-                 #   "GRANT ALL ON {}.* TO 'adel'@'localhost'".format(db_name))
+                #   "GRANT ALL ON {}.* TO 'adel'@'localhost'".format(db_name))
             except mysql.connector.Error as err:
                 print("Failed creating database: {}".format(err))
                 exit(1)
@@ -225,10 +222,11 @@ def create_database(cursor, db_name):
             print(err)
             exit(1)
     return cursor
-##
-# Create tables
-##
+
 def create_tables(cursor, TABLES):
+    """
+        Create tables in sql
+    """
     for name, ddl in TABLES.iteritems():
         try:
             print("Creating table {}: ".format(name))
@@ -241,10 +239,82 @@ def create_tables(cursor, TABLES):
         else:
             print("OK")    	
 	
+
+def populate_sql_database(data_container,add_series_primaries,add_series_days,add_series_tow,weekdays,cursor,cnx):
+    """
+        dump data for 1) street cleaning and 2) tow away time
+    """
+
+    radius = 3959; # radius of earth in miles
+    pi_n=3.14159265358979323/180
+
+    # 1) street cleaning and  
+    for cnn in data_container:    
+        data_series_primaries=(cnn,data_container[cnn]['street'],data_container[cnn]['startn_L'])
+        data_series_primaries+=(data_container[cnn]['endn_L'],data_container[cnn]['startn_R'],data_container[cnn]['endn_R'])
+        data_series_primaries+=(data_container[cnn]['lon'],data_container[cnn]['lat'])
+
+        lat = float(data_container[cnn]['lat']); lon = float(data_container[cnn]['lon'])
+
+        x=radius*cos(lat * pi_n)*cos(lon * pi_n);
+        y=radius*cos(lat * pi_n)*sin(lon * pi_n);
+        z=radius*sin(lat * pi_n)
+        data_series_primaries+=(str(x),str(y),str(z))
+
+        cursor.execute(add_series_primaries, data_series_primaries)
+
+    cnx.commit()    
+
+    for cnn_id in data_container:
+        for day in weekdays:
+            if day in data_container[cnn_id]:   
+                a=''
+                for side in ['L','R']:
+                    if side in data_container[cnn_id][day]:
+                        a += data_container[cnn_id][day][side]['week_flags'] + "_" + side + "_" \
+                         + data_container[cnn_id][day][side]['start_hrs'] + "_" \
+                         + data_container[cnn_id][day][side]['end_hrs'] 
+                    a+= "|"                 
+                data_series_days=(a[:-1] , cnn_id)
+                cursor.execute(add_series_days.format(day), data_series_days)
+
+    cnx.commit()            
+
+    # 2) tow away time
+    for cnn_id in data_container:
+        if 'tow' in data_container[cnn_id]:
+            for side in ['L','R']:
+                if side in data_container[cnn_id]['tow']:
+                    a=''
+                    for el in data_container[cnn_id]['tow'][side]:
+                        a+= el[0]+"_"+el[1]+"_"+el[2]+"|"                
+                    data_series_tow = (a[:-1] , cnn_id)                
+                    cursor.execute(add_series_tow.format(side), data_series_tow)
+    cnx.commit()      
+    
+    return 
+
+
+#All_headers_in_sweep_db='street, startn_R, endn_L, startn_R, endn_R, lon, lat, Mon, Tues, Wed, Thu, Fri, Sat, Sun, Holiday'
+Primary_headers_in_sweep_db='street, startn_L, endn_L, startn_R, endn_R, lon, lat, x_c, y_c, z_c'
+weekdays=['Mon','Tues','Wed','Thu','Fri','Sat','Sun','Holiday']
+
+##
+# For populating the table
+##
+add_series_primaries = ("INSERT INTO cleaning_sch "
+               " (" + 'cnn_id,' + Primary_headers_in_sweep_db +") "
+               " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ")
+
+add_series_days = ("UPDATE cleaning_sch SET {} = %s WHERE cnn_id = %s ")
+
+add_series_tow = ("UPDATE cleaning_sch SET Tow_{} = %s WHERE cnn_id = %s ")
+
+
 ##
 # Declare tables
 # startn_L and endn_L are the starting and the ending number on the corresponding street
-# the format in the day columns: YYYY-L-starttime_endtime|YYYY-R-starttime_endtime	
+# the format in the day columns: YYYY-L-starttime_endtime|YYYY-R-starttime_endtime  
 ##
 TABLES = {}
 TABLES['schedules_for_cleaning'] = (
@@ -272,117 +342,32 @@ TABLES['schedules_for_cleaning'] = (
     "  `z_c` DECIMAL(20,12) NOT NULL, "
     "  PRIMARY KEY (`cnn_id`)"
     ") ENGINE=InnoDB")
-          
 
-
-
-
-#All_headers_in_sweep_db='street, startn_R, endn_L, startn_R, endn_R, lon, lat, Mon, Tues, Wed, Thu, Fri, Sat, Sun, Holiday'
-Primary_headers_in_sweep_db='street, startn_L, endn_L, startn_R, endn_R, lon, lat, x_c, y_c, z_c'
 weekdays=['Mon','Tues','Wed','Thu','Fri','Sat','Sun','Holiday']
-
-##
-# For populating the table
-##
-add_series_primaries = ("INSERT INTO cleaning_sch "
-               " (" + 'cnn_id,' + Primary_headers_in_sweep_db +") "
-               " VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ")
-
-#add_series = ("INSERT INTO cleaning_sch "
-#               " (" + All_headers_in_sweep_db +") "
-#               " VALUES (%s, %s, %s, %s, %s) ")
-
-add_series_days = ("UPDATE cleaning_sch SET {} = %s WHERE cnn_id = %s ")
-
-add_series_tow = ("UPDATE cleaning_sch SET Tow_{} = %s WHERE cnn_id = %s ")
-
-#cursor.execute(add_series, data_series)
-#emp_no = cursor.lastrowid    
 
 
 	
 if __name__ == '__main__':	
-    # we will dump the data in the variable data_container. the keys are going to be cnn variable
-    # which uniqly identifies the considered street section
-    #    subkeys are street_address, latitude and longitude and days of the week. 
-    #        for each day the subkeys are R/L side. 
-    #            for each R/L side, subkeys are start_hrs and end_hrs, and which 
-    #            weeks in the month that schedule applies. 
-
+    # dding the towaway schedule the street cleaning data in the variable data_container.
     data_container=AutoVivification() 
-    data_container= input_sweeping_sched_from_csv("datasets/street_sweep/sfsweeproutes.csv",data_container)
+    data_container= input_sweeping_sched_from_csv("datasets/street_sweep/sfsweeproutes.csv",data_container,weekdays)
 
     # adding the towaway schedule
-    data_container = input_tow_sched_from_csv("datasets/TowAway/TowAway.csv",data_container)
+    data_container = input_tow_sched_from_csv("datasets/TowAway/TowAway.csv",data_container, weekdays)
 
     # connect to sql and create the database
     cnx = db_connect()
     dbase_name_street_sweep = 'sf_street_sweep'
     cursor = create_database(cnx, dbase_name_street_sweep)
     cursor.execute('DROP DATABASE '+ dbase_name_street_sweep)
-
-
     cursor = create_database(cnx, dbase_name_street_sweep)
-
     create_tables(cursor, TABLES)
     
-    radius = 3959; pi_n=3.14159265358979323/180
-
-    for cnn in data_container:    
-        data_series_primaries=(cnn,data_container[cnn]['street'],data_container[cnn]['startn_L'])
-        data_series_primaries+=(data_container[cnn]['endn_L'],data_container[cnn]['startn_R'],data_container[cnn]['endn_R'])
-        data_series_primaries+=(data_container[cnn]['lon'],data_container[cnn]['lat'])
-
-        lat = float(data_container[cnn]['lat']); lon = float(data_container[cnn]['lon'])
-
-        x=radius*cos(lat * pi_n)*cos(lon * pi_n);
-        y=radius*cos(lat * pi_n)*sin(lon * pi_n);
-        z=radius*sin(lat * pi_n)
-        data_series_primaries+=(str(x),str(y),str(z))
-
-
-        cursor.execute(add_series_primaries, data_series_primaries)
-
-    cnx.commit()    
-
-    for cnn_id in data_container:
-        for day in weekdays:
-        	if day in data_container[cnn_id]:   
-        		a=''
-        		for side in ['L','R']:
-        			if side in data_container[cnn_id][day]:
-        				a += data_container[cnn_id][day][side]['week_flags'] + "_" + side + "_" \
-        				 + data_container[cnn_id][day][side]['start_hrs'] + "_" \
-        				 + data_container[cnn_id][day][side]['end_hrs'] 
-        			a+= "|"                 
-        		data_series_days=(a[:-1] , cnn_id)
-        		cursor.execute(add_series_days.format(day), data_series_days)
-
-	cnx.commit()            
-
-    for cnn_id in data_container:
-        if 'tow' in data_container[cnn_id]:
-            for side in ['L','R']:
-                if side in data_container[cnn_id]['tow']:
-                    a=''
-                    for el in data_container[cnn_id]['tow'][side]:
-                        a+= el[0]+"_"+el[1]+"_"+el[2]+"|"                
-                    data_series_tow = (a[:-1] , cnn_id)                
-                    cursor.execute(add_series_tow.format(side), data_series_tow)
-
-    cnx.commit()      
+    # dump data into sql
+    cursor = populate_sql_database(data_container,add_series_primaries,add_series_days,add_series_tow,weekdays,cursor,cnx)
+ 
 
     cursor.close()
     cnx.close()
 
-
-""" 
-use sf_street_sweep;
  
-select distinct street from cleaning_sch where lon >-122.44291 and lon < -122.43591 and lat >37.77 and lat < 37.78;
-
-
-select Mon,Tues,Wed,Thu,Fri,Sat,Sun,Holiday from cleaning_sch where cnn_id='9865000';
-
-
-"""
