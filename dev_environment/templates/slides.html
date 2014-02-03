@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Starter Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="static/dist/css/slate.css" rel="stylesheet"> 
+
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+
+    <style>
+      html, body {
+      height: 100%;
+      margin: 0px;
+      padding: 0px; 
+      }
+      #map-canvas { height: 90%;  margin-top: 10px;margin-right: 15px;
+                     margin-bottom: 0px; float: right; width: 70% } 
+    </style>
+
+ 
+  </head>
+
+  <body>
+
+    <br><br><br>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">relaxedparking</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li class="active"><a href="slides">Slides</a></li>
+            <li><a href="contact">Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+
+
+    <div class="span5" style="margin-left:300px;margin-top:50px; border-width:2px;" >
+		<iframe src="http://www.slideshare.net/slideshow/embed_code/30607103" width="427" height="356" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px 1px 0; margin-bottom:5px; max-width: 100%;" allowfullscreen> 
+		</iframe>  
+		
+    </div> 
+
+
+      
+ 
+
+    <br><br><br><br><br><br><br><br> 
+
+
+
+ 
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="static/dist/js/bootstrap.min.js"></script>
+    <script src="static/dist/js/locations.js"></script>
+    <script src="static/dist/js/jquery-ui.js"></script>
+    <script src="static/dist/js/jquery.datetimepicker.js"></script>
+
+
+
+
+    <script > 
+      $('#datetimepicker').datetimepicker({value:curr_year + "/" + curr_month + "/" +curr_day + " "+curr_hr+":"+curr_minute ,step:30});
+    </script>  
+
+
+  <script type="text/javascript">      
+    console.log("hey " + sf_latlong);
+  </script>
+
+
+  </body>
+</html>

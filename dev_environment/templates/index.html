@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Starter Template for Bootstrap</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="static/dist/css/slate.css" rel="stylesheet"> 
+
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+
+
+    <style>
+      html, body {
+      height: 100%;
+      margin: 0px;
+      padding: 0px; 
+      }
+      #map-canvas { height: 90%;  margin-top: 10px;margin-right: 15px;
+                     margin-bottom: 0px; float: right; width: 75% } 
+    </style>
+
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC_Fr3kmZlbQKAkTVxFXSnDPwSvlNFzOS0&sensor=true">
+    </script> 
+  </head>
+
+  <body>
+
+    <br><br><br>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">relaxedparking</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Home</a></li>
+            <li><a href="slides">Slides</a></li>
+            <li><a href="contact">Contact</a></li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </div>
+ 
+
+    <div id="map-canvas"></div>
+ 
+
+    <div class="span5" style="margin:40px;border-width:2px;" >
+      <form id="directions_form">  
+        Destination 
+        <!--- Box where user inputs restaurant, has name restaurant_type --> 
+
+        <input type="text" id="inputTextAddress" placeholder="Type your address" style=" width:150px" title="Final Destination" />
+
+        <br><br> Arrivel Time 
+        <input type="text" value="" id="datetimepicker" style=" width:150px"/>
+ 
+
+      </form>  
+      
+      <br><br>   How long are you staying?  <br><br><br><br> 
+
+    </div> 
+
+      <div class="span5"  style="margin-left:100px;margin-top:-100px;width:70px" > <label></label>
+        <select class="form-control" id="select_days"> 
+          <option>0 day</option>
+          <option>1 day</option>
+          <option>2 days</option>                                      
+        </select>   
+
+      </div>  
+
+
+      <div class="span5" style="margin-left:180px;margin-top:-60px;width:90px" > <label></label>
+        <select class="form-control" id="select_hours"> 
+          <option>0hr:0min</option>
+          <option>0hr:30min</option>
+          <option>1hr:0min</option>
+          <option>1hr:30min</option>
+          <option>2hr:0min</option>
+          <option>2hr:30min</option>
+          <option>3hr:0min</option>                       
+          <option>3hr:30min</option>
+          <option>4hr:0min</option>
+          <option>4hr:30min</option>
+          <option>5hr:0min</option>
+          <option>5hr:30min</option>
+          <option>6hr:0min</option>
+          <option>6hr:30min</option>
+          <option>7hr:0min</option>
+          <option>7hr:30min</option>
+          <option>8hr:0min</option>
+          <option>8hr:30min</option>
+          <option>9hr:0min</option>
+          <option>9hr:30min</option>
+          <option>10hr:0min</option>
+          <option>10hr:30min</option>
+          <option>11hr:0min</option>
+          <option>11hr:30min</option>
+          <option>12hr:0min</option>
+          <option>12hr:30min</option>
+          <option>13hr:0min</option>
+          <option>13hr:30min</option>
+          <option>14hr:0min</option>
+          <option>14hr:30min</option>
+          <option>15hr:0min</option>
+          <option>15hr:30min</option>
+          <option>16hr:0min</option>
+          <option>16hr:30min</option>
+          <option>17hr:0min</option>
+          <option>17hr:30min</option>
+          <option>18hr:0min</option>
+          <option>18hr:30min</option>
+          <option>19hr:0min</option>
+          <option>19hr:30min</option>
+          <option>20hr:0min</option>
+          <option>20hr:30min</option>
+          <option>21hr:0min</option>
+          <option>21hr:30min</option>
+          <option>22hr:0min</option>
+          <option>22hr:30min</option>
+          <option>23hr:0min</option>
+          <option>23hr:30min</option> 
+        </select>  
+
+      </div> 
+      
+
+        <br>
+        <input type="button" class="btn btn-warning" id="inputButtonGeocode" style="width: 160px;margin-left: 100px" class="btn btn-default" value="Press" />
+
+       <br><br> 
+      <div class="span5" style="margin-left:40px;width:100px" > <label></label>
+  			<li class="dropdown">
+  			  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Examples <b class="caret"></b></a>
+  			  <ul class="dropdown-menu">
+  				<li><a id="ex_1">2450 turk st</a></li>
+  				<li><a id="ex_2">2500 vallejo st</a></li>
+          <li><a id="ex_3">500 balboa st</a></li>
+  			  </ul>
+  			</li>
+						  
+      </div> 
+
+
+    <br><br><br><br><br><br><br><br> 
+ 
+ 
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="static/dist/js/bootstrap.min.js"></script>
+    <script src="static/dist/js/locations.js"></script>
+    <script src="static/dist/js/jquery-ui.js"></script>
+    <script src="static/dist/js/jquery.datetimepicker.js"></script>
+
+
+
+
+    <script > 
+      $('#datetimepicker').datetimepicker({value:curr_year + "/" + curr_month + "/" +curr_day + " "+curr_hr+":"+curr_minute ,step:30});
+    </script>  
+
+
+  <script type="text/javascript">      
+    console.log("hey " + sf_latlong);
+  </script>
+
+
+  </body>
+</html>
