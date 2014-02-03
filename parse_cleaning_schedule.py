@@ -366,7 +366,6 @@ if __name__ == '__main__':
     # dump data into sql
     cursor = populate_sql_database(data_container,add_series_primaries,add_series_days,add_series_tow,weekdays,cursor,cnx)
  
-
     cursor.close()
     cnx.close()
 
