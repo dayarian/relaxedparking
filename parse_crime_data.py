@@ -9,6 +9,9 @@ from re import search
 
 
 def input_data_from_csv(data_thf, data_lar, data_van, yr):
+    """
+        read the csv file which includes the crime data
+    """
     a=pd.read_csv('datasets/sfpd_incident_all_csv/sfpd_incident_'+ yr +'.csv', encoding="utf-8")
     c=a.Descript.map(lambda x:  1 if ('VEHICLE' in x or 'LOCKED AUTO'in x) else 0)
     
@@ -18,12 +21,18 @@ def input_data_from_csv(data_thf, data_lar, data_van, yr):
     return data_thf, data_lar, data_van
 
 def cleanup_crim_date(data):
+    """
+        Keep the relevant columns, add year and month
+    """
     data=data[['Category','Date','Time','X','Y','Descript']]
     data['year']=data.Date.map(lambda x: x[-4:]); data['month']=data.Date.map(lambda x: x[:2])
     data=data.drop('Date', 1)
     return data
 
 def dump_crime_to_sql(data, cnx, cursor):
+    """
+        Dump crime location into database
+    """
     radius = 3959; pi_n=3.14159265358979323/180 
     for index, row in data.iterrows():
         data_crime_vals=()
@@ -45,10 +54,10 @@ def dump_crime_to_sql(data, cnx, cursor):
     cnx.commit()  
     return
 
-##
-# Connect to DB, return connection object
-##
 def db_connect(db_name=None):
+    """
+        Connect to database, return connection object
+    """    
     try:
         cnx = mysql.connector.connect(user='adel')#(user='*********', password='*********')
     except mysql.connector.Error as err:
@@ -67,10 +76,11 @@ def db_connect(db_name=None):
                 print(err)
                 exit(1)
         return cnx
-##
-# Create database
-##
+
 def create_database(cursor, db_name):
+    """
+        Create database
+    """    
     cursor = cnx.cursor()
     try:
         cnx.database = db_name    
@@ -89,10 +99,11 @@ def create_database(cursor, db_name):
             print(err)
             exit(1)
     return cursor
-##
-# Create tables
-##
+
 def create_tables(cursor, TABLES):
+    """
+        Create tables
+    """
     for name, ddl in TABLES.iteritems():
         try:
             print("Creating table {}: ".format(name))
@@ -150,7 +161,7 @@ if __name__ == '__main__':
 
     
     for yr in ['2011','2012','2013']:
-        # we will dump the crime data in variables data_thf, data_lar, data_van
+        # we will dump the crime data in variables data_thf (for theft of vehicle), data_lar (for theft from vehicle), data_van (for vandalism)
         data_thf=[]; data_lar=[]; data_van=[]
         data_thf, data_lar, data_van = input_data_from_csv(data_thf, data_lar, data_van, yr)
         data_thf=cleanup_crim_date(data_thf); data_lar=cleanup_crim_date(data_lar); data_van=cleanup_crim_date(data_van)
