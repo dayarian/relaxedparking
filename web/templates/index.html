@@ -44,7 +44,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">relaxedparking</a>
+          <a class="navbar-brand" href="/">relaxedparking</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
@@ -73,7 +73,7 @@
 
       </form>  
       
-      <br><br>   How long are you staying?  <br><br><br><br> 
+      <br>  How long are you staying?  <br><br><br><br> 
 
     </div> 
 
@@ -143,9 +143,10 @@
       
 
         <br>
-        <input type="button" class="btn btn-warning" id="inputButtonGeocode" style="width: 160px;margin-left: 100px" class="btn btn-default" value="Press" />
+        <input type="button" class="btn btn-info" id="inputButtonGeocode" style="width: 160px;margin-left: 100px" 
+          class="btn btn-default" value="Click"/>
 
-       <br><br> 
+       <br>
       <div class="span5" style="margin-left:40px;width:100px" > <label></label>
   			<li class="dropdown">
   			  <a href="#" class="dropdown-toggle" data-toggle="dropdown">Examples <b class="caret"></b></a>
@@ -157,6 +158,16 @@
   			</li>
 						  
       </div> 
+
+      <br><br>
+      
+      <div class="span5" style="margin-left:100px;width:100px" > <label></label>
+
+        <img src="/static/img/legend.jpg" alt="" class="img-rounded">
+              
+      </div> 
+
+      
 
 
     <br><br><br><br><br><br><br><br> 
@@ -179,11 +190,6 @@
     <script > 
       $('#datetimepicker').datetimepicker({value:curr_year + "/" + curr_month + "/" +curr_day + " "+curr_hr+":"+curr_minute ,step:30});
     </script>  
-
-
-  <script type="text/javascript">      
-    console.log("hey " + sf_latlong);
-  </script>
 
 
   </body>
