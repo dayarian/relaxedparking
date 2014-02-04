@@ -248,7 +248,7 @@ def populate_sql_database(data_container,add_series_primaries,add_series_days,ad
     radius = 3959; # radius of earth in miles
     pi_n=3.14159265358979323/180
 
-    # 1) street cleaning and  
+    # 1) street cleaning   
     for cnn in data_container:    
         data_series_primaries=(cnn,data_container[cnn]['street'],data_container[cnn]['startn_L'])
         data_series_primaries+=(data_container[cnn]['endn_L'],data_container[cnn]['startn_R'],data_container[cnn]['endn_R'])
@@ -348,7 +348,7 @@ weekdays=['Mon','Tues','Wed','Thu','Fri','Sat','Sun','Holiday']
 
 	
 if __name__ == '__main__':	
-    # dding the towaway schedule the street cleaning data in the variable data_container.
+    # adding the street cleaning data in the variable data_container.
     data_container=AutoVivification() 
     data_container= input_sweeping_sched_from_csv("datasets/street_sweep/sfsweeproutes.csv",data_container,weekdays)
 
