@@ -66,7 +66,7 @@ def contact():
 def getGoodblocks():
     """
         It receives the destination, time of arrival and duration of stay.
-        It returns whether one can park ine ach of the neighboring blocks,
+        It returns whether one can park ine each of the neighboring blocks,
         and how risky/safe it is to park at each block
     """
     # input and parse variables
@@ -95,7 +95,7 @@ def getGoodblocks():
     else:  
         return json.dumps([])
 
-    # extract current_time        2014/1/22 10:47 
+    # extract current_time      format:  2014/1/22 10:47 
     m=search(r'(\d+)/(\d+)/(\d+) (\d+):(\d+)',current_time);  
     if m:   
         current_year=int(m.group(1)); 
@@ -109,8 +109,7 @@ def getGoodblocks():
 
     weekdays=['Mon','Tues','Wed','Thu','Fri','Sat','Sun']
 
-    # (dt.date(2014, 1, 18)+dt.timedelta(days=1)).month
-    # (dt.date(2014, 1, 18)+dt.timedelta(days=1)).day  # d=8;  1+(d-1)/7     
+
     # lat, lon, num_days, num_hrs, num_min, zone, current_year, current_month, current_day, current_hr, current_min
 
     # determine which day the arrival day is, and also the follwoing days in case someone is staying for more than one day
@@ -122,6 +121,9 @@ def getGoodblocks():
     delta_lon=.006; delta_lat=.005;
 
     # get the information about all the blocks in the neighborhood of the destination
+
+    # street name, starting and ending number on L (odd) and R (even)tside,
+    # lat, lon, cleaning rules for day1 to day4, tow away rules for L/R sides, risk score for larceny
     query_results= db.query("SELECT street, startn_L, endn_L, startn_R, endn_R, lat, lon, \
        "+ day_1 + ","+ day_2 +","+ day_3 +","+ day_4 +", Tow_L, Tow_R, Risk_2012_larceny, Risk_2013_larceny\
                             FROM cleaning_sch WHERE \
@@ -215,7 +217,6 @@ def check_availability(street, startn_L, endn_L, startn_R, endn_R,\
             return False 
 
 def find_compatibility_per_day(park_start_time,park_end_time, day_rules, day, Tow_L, Tow_R):
-
     """
         For each day, check whether the parking time conflicts with the cleaning schedule or tow away times.
 
