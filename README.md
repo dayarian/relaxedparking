@@ -9,7 +9,7 @@ Repository Layout:
 
 /parsing_input_data : Python scripts for parsing the SF data and storing it in SQL
 
-/risk_model : Scripts for analyzing the 
+/risk_model : Scripts for exploring the crime data
 
 /web : The Flask-based application which serves up the app
 
