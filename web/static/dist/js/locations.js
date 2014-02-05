@@ -143,15 +143,15 @@ $(function() {
     $("#ex_2").click(function() {  
         $('#inputTextAddress').val('2500 vallejo st')
         $('#datetimepicker').val('2014/01/27 20:50')
-        $('#select_days').val('2 days')
+        $('#select_days').val('0 day')
         $('#select_hours').val('22hr:30min')
     }); 
 
     $("#ex_3").click(function() {  
-        $('#inputTextAddress').val('500 balboa st')
+        $('#inputTextAddress').val('2799 geary blvd')
         $('#datetimepicker').val('2014/01/27 20:50')
-        $('#select_days').val('2 days')
-        $('#select_hours').val('22hr:30min')
+        $('#select_days').val('1 day')
+        $('#select_hours').val('10hr:30min')
     }); 
 
 
