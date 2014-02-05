@@ -49,28 +49,30 @@ def set_up_variables():
         3) bin_edges: It is basically the same as radiuses_larceny but in miles instead of feet.
                       This variable is used later to plot the historagm.   
         4) threshold_outmost: the maximum distance around each crime location that we will explore.
+        
+        5) areas_larceny: area between two consecutive radii.
     """
 
     feet_in_mile = 5280.; # number of feets in one mile
 
     radiuses_larceny = [0,200]+range(500,3400,400) 
-    event_count_larceny=zeros(len(radiuses_larceny)); areas_larceny=[0.1]; 
+    event_count_larceny= np.zeros(len(radiuses_larceny)); areas_larceny=[0.1]; 
     for i in range(1,len(radiuses_larceny)):
-        areas_larceny.append(pi*(radiuses_larceny[i]**2-radiuses_larceny[i-1]**2))
+        areas_larceny.append(np.pi*(radiuses_larceny[i]**2-radiuses_larceny[i-1]**2))
 
     bin_edges=np.array(radiuses_larceny)/feet_in_mile; 
 
     threshold_outmost = radiuses_larceny[-1]/feet_in_mile;
 
-    return radiuses_larceny, event_count_larceny, bin_edges, threshold_outmost
+    return radiuses_larceny, event_count_larceny, bin_edges, threshold_outmost, areas_larceny
 
 
 
-def count_events(radiuses_larceny, event_count_larceny):
+def count_events(radiuses_larceny, event_count_larceny, bin_edges):
 
     E_radius = 3959; # earth_radius in miles
     feet_in_mile = 5280.; # number of feets in one mile
-    pi=3.14159265358979323; pi_n=3.14159265358979323/180;  
+    pi_n=3.14159265358979323/180;  
 
     # get all the crime locations
     dbase_name_street_sweep = 'sf_street_sweep';     
@@ -83,10 +85,12 @@ def count_events(radiuses_larceny, event_count_larceny):
     # set up another connection to sql database
     db = MySQLdb.connect(user="root", host="localhost", port=3306, db= dbase_name_street_sweep) 
 
+    cnt=0
+
     # go through each crime locations
     for (x_o, y_o, z_o, lon, lat, year) in cursor: 
         cnt+=1         
-        if cnt % 1 != 0: # only look at a sub sample
+        if cnt % 100 != 0: # only look at a sub sample
             continue   
 
         # query all other crimes in the vicinity of the original crime 
@@ -107,22 +111,49 @@ def count_events(radiuses_larceny, event_count_larceny):
 
 
 
+def plot_probability_vs_radius(radiuses_larceny, event_count_larceny, bin_edges, areas_larceny):
 
+    prob=event_count_larceny/areas_larceny; 
 
+    integral=0; prob[0]=prob[1];
+    for i in range(1,len(radiuses_larceny)):
+        integral += (radiuses_larceny[i]-radiuses_larceny[i-1]) * (prob[i]+prob[i-1])/2.
+        
+    prob/= integral
+    prob*=1000
 
+    plt.rcParams['axes.linewidth'] = 1.5
+    plt.plot((np.array(radiuses_larceny[1:-2])-radiuses_larceny[1]/2), prob[1:-2], linewidth=2, color='#0099FF'); 
+    #0099FF nice blue
+    #5CE62E green
+    #ff1493 pink
+    #FF9933 orange
 
- 
+    plt.yticks(np.arange(0.28, .4, 0.04))
+    plt.setp(plt.gca().get_xticklabels(),  fontsize=14)
+    plt.setp(plt.gca().get_yticklabels(), fontsize=14)
+
+    plt.xlabel('Distance', fontsize = 18, name = 'Helvetica')
+    #plt.ylabel('Probability', fontsize = 18, name = 'Helvetica')
+    #plt.title('Larceny from vechicle',fontsize=18, name = 'Helvetica')
+
+    plt.savefig('larceny_2_b.pdf', dpi=100, bbox_inches='tight', set_visible = False)
+
+    return
+
 
 
 
 if __name__ == '__main__':  
 
     # set up some variables
-    radiuses_larceny, event_count_larceny, bin_edges, threshold_outmost = set_up_variables()
+    radiuses_larceny, event_count_larceny, bin_edges, threshold_outmost, areas_larceny = set_up_variables()
 
 
-    event_count_larceny = count_events(radiuses_larceny, event_count_larceny)
+    event_count_larceny = count_events(radiuses_larceny, event_count_larceny, bin_edges)
 
+    print event_count_larceny
 
+    plot_probability_vs_radius(radiuses_larceny, event_count_larceny, bin_edges, areas_larceny)
 
     
